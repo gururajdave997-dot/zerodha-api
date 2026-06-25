@@ -47,6 +47,58 @@ app.get('/api/status', (req, res) => {
   });
 });
 
+app.get('/api/instruments', async (req, res) => {
+
+  try {
+
+    const instruments = await kite.getInstruments();
+
+    const stocks = instruments
+
+      .filter(
+
+        (e) =>
+
+          e.exchange === 'NSE' &&
+
+          e.segment === 'NSE'
+
+      )
+
+      .map((e) => ({
+
+        symbol: e.tradingsymbol,
+
+        name: e.name,
+
+        instrumentToken: e.instrument_token,
+
+      }));
+
+    res.json({
+
+      success: true,
+
+      count: stocks.length,
+
+      data: stocks,
+
+    });
+
+  } catch (e) {
+
+    res.status(500).json({
+
+      success: false,
+
+      error: e.message,
+
+    });
+
+  }
+
+});
+
 const PORT = process.env.PORT || 3000;
 
 // Start HTTP Server
